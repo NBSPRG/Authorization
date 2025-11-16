@@ -21,4 +21,4 @@ private:
     Permission* permission;
 };
 
-#endif ACCESS_CONTEXT_HPP
+#endif

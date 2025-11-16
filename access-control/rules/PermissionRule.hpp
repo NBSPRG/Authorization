@@ -7,4 +7,4 @@ class PermissionRule {
 public:
     virtual bool evaluate(const AccessContext& ctx, PermissionService& svc) = 0;
     virtual ~PermissionRule() = default;
-}
+};

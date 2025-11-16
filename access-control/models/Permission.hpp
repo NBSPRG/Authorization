@@ -19,4 +19,4 @@ private:
     std::string permission_type;
 };
 
-#endif PERMISSION_HPP
+#endif

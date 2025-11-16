@@ -19,4 +19,4 @@ private:
     std::string name; 
 };
 
-#endif GROUP_HPP
+#endif

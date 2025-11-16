@@ -1,7 +1,7 @@
 #include "Group.hpp"
 
 Group::Group(int _id, std::string _name)
-    : id(_id), name(std::move(name)) {}
+    : id(_id), name(std::move(_name)) {}
 
 Group::~Group() {}
 

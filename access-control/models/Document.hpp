@@ -20,4 +20,4 @@ private:
     std::string content;
 };
 
-#endif DOCUMENT_HPP
+#endif
