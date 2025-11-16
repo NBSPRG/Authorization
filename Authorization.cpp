@@ -120,6 +120,17 @@ public:
     virtual ~PermissionService() = default;
 };
 
+class PermissionServiceWithBatch : public PermissionService {
+public:
+    virtual bool has_any_permission(const AccessContext& ctx, const std::vector<std::string>& conditions) {
+        for (const auto &c : conditions) {
+            if (query_database(ctx, c.c_str())) return true;
+        }
+        return false;
+    }
+    ~PermissionServiceWithBatch() override = default;
+};
+
 
 class PermissionRule {
 public:
@@ -175,8 +186,14 @@ public:
             Since here we want that any of the rule exists true, meaning it has permission,
             so, we need to check for (rule->evaluate(ctx, service)) in loop
         */
-        for(auto &rule: rules) {
-            if(rule->evaluate(ctx, service)) return true;
+        std::vector<std::string> conditions = {"direct", "group", "folder"};
+
+        if (auto *batchSvc = dynamic_cast<PermissionServiceWithBatch*>(&service)) {
+            return batchSvc->has_any_permission(ctx, conditions);
+        }
+
+        for (auto &rule: rules) {
+            if (rule->evaluate(ctx, service)) return true;
         }
         return false;
     }
@@ -187,7 +204,17 @@ class RealPermissionService: public PermissionService{
 public:
     bool query_database(const AccessContext &ctx, const char* condition) override {
         std::cout << "Querying from database for condition [ " << condition << " ] for user\n";
-        return false; 
+        return false;
+    }
+
+    bool has_any_permission(const AccessContext &ctx, const std::vector<std::string> &conditions) {
+        std::cout << "[DB Combined Query]: for " << ctx.user->name << " checking ";
+        for (size_t i = 0; i < conditions.size(); ++i) {
+            if (i) std::cout << ", ";
+            std::cout << conditions[i];
+        }
+        std::cout << "\n";
+        return false;
     }
 };
 

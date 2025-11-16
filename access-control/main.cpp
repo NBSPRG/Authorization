@@ -12,6 +12,7 @@
 #include "./rules/FolderInheritanceRule.hpp"
 #include "./checkers/PermissionChecker.hpp"
 #include "./checkers/DefaultPermissionChecker.hpp"
+#include "./checkers/BatchPermissionChecker.hpp"
 
 int main(int argc, const char* argv[]) {
 
@@ -20,15 +21,16 @@ int main(int argc, const char* argv[]) {
     Permission perm(1, "view");
     AccessContext ctx(&user, &doc, &perm);
 
-    PermissionService* svc = new RealPermissionService();
+    auto svc = std::make_unique<RealPermissionService>();
 
     std::vector<std::unique_ptr<PermissionRule>> rules;
     rules.emplace_back(std::make_unique<DirectRule>());
     rules.emplace_back(std::make_unique<GroupRule>());
     rules.emplace_back(std::make_unique<FolderInheritanceRule>());
 
-    PermissionChecker* checkers = new DefaultPermissionChecker(*svc, rules);
-    if(checkers->can_access(ctx)) {
+    // Use BatchPermissionChecker to demonstrate optimized batch checking
+    auto checker = std::make_unique<BatchPermissionChecker>(*svc, rules);
+    if(checker->can_access(ctx)) {
         std::cout << "Permission granted !!!" << std::endl;
         return 0;
     }
